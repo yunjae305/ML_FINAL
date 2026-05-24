@@ -1,0 +1,10 @@
+artifact_location: file:C:\Users\kyj31\Desktop\ML_Final\mlruns/779756512248946338/models/m-da4cedd6bfdc458888d27fc48fa0f968/artifacts
+creation_timestamp: 1779531894642
+experiment_id: '779756512248946338'
+last_updated_timestamp: 1779531900097
+model_id: m-da4cedd6bfdc458888d27fc48fa0f968
+model_type: null
+name: model
+source_run_id: 23de92246ab24f27808ebdcf419fa1d0
+status: 2
+status_message: null

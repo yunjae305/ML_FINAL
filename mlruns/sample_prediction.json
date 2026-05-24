@@ -1,0 +1,70 @@
+{
+  "heart_probability": 0.1703,
+  "heart_probability_percent": 17.0,
+  "risk_tier": "low_signal",
+  "action_level": "low",
+  "confidence_level": "high",
+  "top_risk_factors": [
+    "age",
+    "trestbps",
+    "chol",
+    "thalach",
+    "oldpeak"
+  ],
+  "symptoms": {
+    "symptom_chest_pain_now": false,
+    "symptom_shortness_breath": false,
+    "symptom_fainting": false,
+    "symptom_radiating_pain": false
+  },
+  "daily_caffeine_mg": 260.0,
+  "daily_calories_kcal": 120.0,
+  "daily_sugar_g": 27.0,
+  "caffeine_alert": "moderate",
+  "response_actions": [
+    "Keep this result as a baseline and update it when new checkup values are available.",
+    "Maintain routine prevention habits: blood pressure awareness, cholesterol awareness, sleep, activity, and avoiding tobacco.",
+    "Prepare recent blood pressure and cholesterol measurements for review.",
+    "Write down when symptoms occur, whether they appear during exertion, and how long they last.",
+    "Bring today's caffeine and energy-drink log to the consultation as lifestyle context."
+  ],
+  "consultation_questions": [
+    "Do my entered values suggest that I should repeat any measurements or get a formal checkup?",
+    "Which risk factor should I prioritize first: blood pressure, cholesterol, blood sugar, symptoms, activity, sleep, or tobacco exposure?",
+    "What symptoms would mean I should seek urgent care instead of waiting for a routine appointment?",
+    "Are my blood pressure or cholesterol values high enough to require follow-up testing or management?",
+    "Could my chest-pain or exercise-related symptoms require ECG, stress testing, or another evaluation?",
+    "Could caffeine or energy-drink intake be contributing to palpitations, sleep loss, or symptom perception?"
+  ],
+  "medical_disclaimer": "This result is not a medical diagnosis and should not be used as the only basis for treatment decisions. It is a risk-signal and consultation-preparation aid.",
+  "student_message": "Heart-risk signal is low, but caffeine or sugar intake is notable today.",
+  "model_version": "cardiocare-20260523T102054Z",
+  "batch_probabilities": [
+    0.1703
+  ],
+  "visit_summary": {
+    "purpose": "Consultation preparation summary for a clinician or campus health center.",
+    "heart_probability_percent": 17.0,
+    "action_level": "low",
+    "confidence_level": "high",
+    "top_risk_factors": [
+      "age",
+      "trestbps",
+      "chol",
+      "thalach",
+      "oldpeak"
+    ],
+    "key_measurements": {
+      "age": 22.0,
+      "trestbps": 120.0,
+      "chol": 190.0,
+      "thalach": 175.0,
+      "oldpeak": 0.1,
+      "cp": 4.0,
+      "exang": 0.0
+    },
+    "daily_caffeine_mg": 260.0,
+    "caffeine_alert": "moderate",
+    "disclaimer": "This result is not a medical diagnosis and should not be used as the only basis for treatment decisions. It is a risk-signal and consultation-preparation aid."
+  }
+}

@@ -1,0 +1,14 @@
+artifact_uri: file:C:\Users\kyj31\Desktop\ML_Final\mlruns/268412453266716757/110c600c85c549d5a62195123f597269/artifacts
+end_time: 1779530415849
+entry_point_name: ''
+experiment_id: '268412453266716757'
+lifecycle_stage: active
+run_id: 110c600c85c549d5a62195123f597269
+run_name: Logistic Regression
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1779530409161
+status: 3
+tags: []
+user_id: kyj31

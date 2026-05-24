@@ -1,0 +1,14 @@
+artifact_uri: file:C:\Users\kyj31\Desktop\ML_Final\mlruns/268412453266716757/c2dcd24733d542a99689b8f652adc2b6/artifacts
+end_time: 1779530425059
+entry_point_name: ''
+experiment_id: '268412453266716757'
+lifecycle_stage: active
+run_id: c2dcd24733d542a99689b8f652adc2b6
+run_name: SVC
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1779530419891
+status: 3
+tags: []
+user_id: kyj31

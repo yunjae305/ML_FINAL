@@ -1,0 +1,17 @@
+drink_id,name,brand,category,size_ml,caffeine_mg,calories_kcal,sugar_g,source
+bev_001,아이스 아메리카노,Campus Cafe,coffee,473,180,10,0,curated campus menu estimate
+bev_002,핫 아메리카노,Campus Cafe,coffee,355,150,8,0,curated campus menu estimate
+bev_003,카페라떼,Campus Cafe,coffee,355,120,180,12,curated campus menu estimate
+bev_004,바닐라라떼,Campus Cafe,coffee,355,120,260,32,curated campus menu estimate
+bev_005,카라멜마키아토,Campus Cafe,coffee,355,120,300,38,curated campus menu estimate
+bev_006,콜드브루,Campus Cafe,coffee,473,220,15,0,curated campus menu estimate
+bev_007,디카페인 아메리카노,Campus Cafe,coffee,355,10,8,0,curated campus menu estimate
+bev_008,녹차,Convenience Store,tea,355,37,0,0,FDA typical caffeine table
+bev_009,홍차,Convenience Store,tea,355,71,0,0,FDA typical caffeine table
+bev_010,콜라,Convenience Store,soda,355,45,140,39,curated label estimate
+bev_011,제로콜라,Convenience Store,soda,355,45,0,0,curated label estimate
+bev_012,에너지드링크 250ml,Convenience Store,energy drink,250,80,110,27,curated label estimate
+bev_013,에너지드링크 355ml,Convenience Store,energy drink,355,160,160,40,curated label estimate
+bev_014,고카페인 에너지드링크,Convenience Store,energy drink,473,240,220,54,curated label estimate
+bev_015,초코라떼,Campus Cafe,non-coffee,355,15,290,36,curated campus menu estimate
+

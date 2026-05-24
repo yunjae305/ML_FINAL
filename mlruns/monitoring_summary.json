@@ -1,0 +1,37 @@
+{
+  "baseline_balanced_accuracy": 0.9063852813852814,
+  "shifted_balanced_accuracy": 0.8912337662337663,
+  "balanced_accuracy_delta": -0.015151515151515138,
+  "drift_report": [
+    {
+      "feature": "age",
+      "ks_statistic": 0.08758975748543557,
+      "p_value": 0.8124358834242044,
+      "drift_flag": false
+    },
+    {
+      "feature": "trestbps",
+      "ks_statistic": 0.13839588131689473,
+      "p_value": 0.2761914867893869,
+      "drift_flag": false
+    },
+    {
+      "feature": "chol",
+      "ks_statistic": 0.35367836336539765,
+      "p_value": 6.052332596693281e-06,
+      "drift_flag": true
+    },
+    {
+      "feature": "thalach",
+      "ks_statistic": 0.07058664137650725,
+      "p_value": 0.9516995052966807,
+      "drift_flag": false
+    },
+    {
+      "feature": "oldpeak",
+      "ks_statistic": 0.20376642731337216,
+      "p_value": 0.029436284118401043,
+      "drift_flag": true
+    }
+  ]
+}

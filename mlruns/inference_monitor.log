@@ -1,0 +1,3 @@
+{"timestamp": "2026-05-23T10:00:55.861556+00:00", "model_version": "cardiocare-20260523T100044Z", "input_shape": [5, 13], "prediction": [0.2208, 0.6082, 0.0456, 0.0527, 0.3628], "actual": [0, 0, 0, 0, 0]}
+{"timestamp": "2026-05-23T10:21:07.137183+00:00", "model_version": "cardiocare-20260523T102054Z", "input_shape": [5, 13], "prediction": [0.2208, 0.6082, 0.0456, 0.0527, 0.3628], "actual": [0, 0, 0, 0, 0]}
+{"timestamp": "2026-05-23T10:25:36.751664+00:00", "model_version": "cardiocare-20260523T102527Z", "input_shape": [5, 13], "prediction": [0.2208, 0.6082, 0.0456, 0.0527, 0.3628], "actual": [0, 0, 0, 0, 0]}

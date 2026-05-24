@@ -1,0 +1,14 @@
+artifact_uri: file:C:\Users\kyj31\Desktop\ML_Final\mlruns/779756512248946338/cc941f73e1a1447283c427a66299402c/artifacts
+end_time: 1779531646040
+entry_point_name: ''
+experiment_id: '779756512248946338'
+lifecycle_stage: active
+run_id: cc941f73e1a1447283c427a66299402c
+run_name: Random Forest
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1779531641365
+status: 3
+tags: []
+user_id: kyj31

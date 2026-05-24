@@ -1,0 +1,161 @@
+{
+  "dataset": "heart+disease.zip / UCI processed Cleveland",
+  "service_concept": "CardioCare Action Navigator",
+  "target_binarization": "0 -> normal, 1..4 -> heart disease",
+  "random_state": 42,
+  "test_size": 0.2,
+  "model_version": "cardiocare-20260523T102527Z",
+  "base_model_results": [
+    {
+      "name": "Logistic Regression",
+      "cv_balanced_accuracy_mean": 0.8437423285249371,
+      "cv_balanced_accuracy_std": 0.02919702173883664,
+      "metrics": {
+        "balanced_accuracy": 0.9063852813852814,
+        "precision": 0.84375,
+        "recall": 0.9642857142857143,
+        "f1": 0.9
+      },
+      "confusion_matrix": [
+        [
+          28,
+          5
+        ],
+        [
+          1,
+          27
+        ]
+      ],
+      "selected_original_features": [
+        "age",
+        "trestbps",
+        "chol",
+        "thalach",
+        "oldpeak",
+        "sex",
+        "cp",
+        "exang",
+        "slope",
+        "ca",
+        "thal"
+      ]
+    },
+    {
+      "name": "SVC",
+      "cv_balanced_accuracy_mean": 0.799621634404243,
+      "cv_balanced_accuracy_std": 0.018038776964365247,
+      "metrics": {
+        "balanced_accuracy": 0.9366883116883117,
+        "precision": 0.9,
+        "recall": 0.9642857142857143,
+        "f1": 0.9310344827586207
+      },
+      "confusion_matrix": [
+        [
+          30,
+          3
+        ],
+        [
+          1,
+          27
+        ]
+      ],
+      "selected_original_features": [
+        "age",
+        "trestbps",
+        "chol",
+        "thalach",
+        "oldpeak",
+        "sex",
+        "cp",
+        "exang",
+        "slope",
+        "ca",
+        "thal"
+      ]
+    },
+    {
+      "name": "Random Forest",
+      "cv_balanced_accuracy_mean": 0.7899738747564834,
+      "cv_balanced_accuracy_std": 0.028738358396493045,
+      "metrics": {
+        "balanced_accuracy": 0.8885281385281385,
+        "precision": 0.8387096774193549,
+        "recall": 0.9285714285714286,
+        "f1": 0.8813559322033898
+      },
+      "confusion_matrix": [
+        [
+          28,
+          5
+        ],
+        [
+          2,
+          26
+        ]
+      ],
+      "selected_original_features": [
+        "age",
+        "trestbps",
+        "chol",
+        "thalach",
+        "oldpeak",
+        "sex",
+        "cp",
+        "exang",
+        "slope",
+        "ca",
+        "thal"
+      ]
+    }
+  ],
+  "grid_search": {
+    "best_params": {
+      "model__C": 0.5
+    },
+    "best_cv_recall": 0.8280632411067194,
+    "threshold_selection": {
+      "balanced_accuracy": 0.9063852813852814,
+      "precision": 0.84375,
+      "recall": 0.9642857142857143,
+      "f1": 0.9,
+      "threshold": 0.48,
+      "false_negatives": 1,
+      "selection_score": 0.9382305194805195
+    }
+  },
+  "final_model": {
+    "path": "C:\\Users\\kyj31\\Desktop\\ML_Final\\mlruns\\cardiocare_model.joblib",
+    "threshold": 0.48,
+    "metrics": {
+      "balanced_accuracy": 0.9063852813852814,
+      "precision": 0.84375,
+      "recall": 0.9642857142857143,
+      "f1": 0.9
+    },
+    "confusion_matrix": [
+      [
+        28,
+        5
+      ],
+      [
+        1,
+        27
+      ]
+    ],
+    "selected_original_features": [
+      "age",
+      "trestbps",
+      "chol",
+      "thalach",
+      "oldpeak",
+      "sex",
+      "cp",
+      "exang",
+      "slope",
+      "ca",
+      "thal"
+    ],
+    "clinical_selection_note": "The final model prioritizes recall because false negatives are riskier than conservative health-center review recommendations."
+  }
+}
