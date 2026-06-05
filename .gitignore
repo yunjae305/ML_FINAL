@@ -17,11 +17,14 @@ env/
 .env
 .env.*
 
+data/train_reference.csv
+data/test_set.csv
 report.html
 mlruns/[0-9]*/
 mlruns/.trash/
 mlruns/*.log
 mlruns/sample_prediction.json
+mlruns/report_*.png
 
 .DS_Store
 Thumbs.db

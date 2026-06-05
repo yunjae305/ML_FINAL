@@ -14,6 +14,8 @@ report.pdf
 report.html
 data/heart+disease/
 data/heart+disease.zip
+data/train_reference.csv
+data/test_set.csv
 mlruns/**
 !mlruns/
 !mlruns/cardiocare_model.joblib

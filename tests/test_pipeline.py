@@ -335,13 +335,15 @@ class TestCodeSubmissionRequirements(unittest.TestCase):
 
     def test_readme_frames_project_as_cli_docker_ml_system(self):
         readme = (ROOT_DIR / "README.md").read_text(encoding="utf-8")
-        self.assertIn("CLI/Docker-based ML system", readme)
+        self.assertIn("CLI/Docker 기반 ML 시스템", readme)
+        self.assertIn("전체 재현 절차", readme)
         self.assertIn("python src/monitor.py", readme)
         self.assertLess(readme.index("python src/monitor.py"), readme.index("docker build -t cardiocare:1.0 ."))
         self.assertIn("confusion_matrix.json", readme)
         self.assertIn("selected_features.json", readme)
         self.assertIn("model_family tag", readme)
         self.assertIn("monitoring_summary.json", readme)
+        self.assertIn("전문적인 의학 진단", readme)
 
     def test_dockerignore_keeps_build_context_small(self):
         dockerignore = (ROOT_DIR / ".dockerignore").read_text(encoding="utf-8")
