@@ -1,3 +1,8 @@
 {"timestamp": "2026-05-23T10:00:55.676838+00:00", "model_version": "cardiocare-20260523T100044Z", "input_shape": [1, 13], "prediction": [0.1703], "actual": null}
 {"timestamp": "2026-05-23T10:02:09.100792+00:00", "model_version": "cardiocare-20260523T100044Z", "input_shape": [1, 13], "prediction": [0.1703], "actual": null}
 {"timestamp": "2026-05-23T10:21:06.998514+00:00", "model_version": "cardiocare-20260523T102054Z", "input_shape": [1, 17], "prediction": [0.1703], "actual": null}
+{"timestamp": "2026-06-04T15:15:54.529380+00:00", "model_version": "cardiocare-20260604T151522Z", "input_shape": [1, 17], "prediction": [0.1703], "actual": null}
+{"timestamp": "2026-06-04T15:30:35.895261+00:00", "model_version": "cardiocare-20260604T153015Z", "input_shape": [1, 17], "prediction": [0.1703], "actual": null}
+{"timestamp": "2026-06-04T16:07:44.380545+00:00", "model_version": "cardiocare-20260604T154853Z", "input_shape": [1, 17], "prediction": [0.1703], "actual": null}
+{"timestamp": "2026-06-05T02:08:29.695720+00:00", "model_version": "cardiocare-20260604T154853Z", "input_shape": [1, 17], "prediction": [0.1703], "actual": null}
+{"timestamp": "2026-06-05T02:14:02.384219+00:00", "model_version": "cardiocare-20260604T154853Z", "input_shape": [1, 17], "prediction": [0.1703], "actual": null}

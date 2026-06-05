@@ -3,6 +3,7 @@ from __future__ import annotations
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
+from urllib.parse import unquote
 
 import joblib
 import matplotlib.pyplot as plt
@@ -23,11 +24,12 @@ from sklearn.svm import SVC
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from preprocessing import (  # noqa: E402
+from preprocessing import (
     DATA_DIR,
     FEATURE_COLUMNS,
     MLRUNS_DIR,
     MODEL_PATH,
+    PARALLEL_JOBS,
     RANDOM_STATE,
     TARGET_COLUMN,
     TEST_SET_PATH,
@@ -37,10 +39,48 @@ from preprocessing import (  # noqa: E402
     build_model_pipeline,
     get_transformed_feature_names,
     load_heart_data,
+    prepare_model_data,
     selected_original_features,
     write_json,
     write_report_pdf,
 )
+
+
+EXPERIMENT_NAME = "CardioCare Action Navigator"
+
+
+def _artifact_location_points_to_current_mlruns(location: str) -> bool:
+    normalized_location = unquote(str(location)).replace("\\", "/")
+    normalized_current = str(MLRUNS_DIR.resolve()).replace("\\", "/")
+    if normalized_current not in normalized_location:
+        return False
+    if normalized_location.rstrip("/") == normalized_current:
+        return True
+    location_path = Path(normalized_location.replace("file:///", "").replace("file:", ""))
+    if location_path.parent.resolve() == MLRUNS_DIR.resolve() and not location_path.name.isdigit():
+        return False
+    return True
+
+
+def configure_mlflow_experiment() -> str:
+    mlflow.set_tracking_uri(f"file:{MLRUNS_DIR.resolve()}")
+    experiment = mlflow.get_experiment_by_name(EXPERIMENT_NAME)
+    if experiment is None or _artifact_location_points_to_current_mlruns(experiment.artifact_location):
+        mlflow.set_experiment(EXPERIMENT_NAME)
+        return EXPERIMENT_NAME
+
+    suffix = 1
+    while True:
+        experiment_name = f"{EXPERIMENT_NAME} Reproducible {suffix}"
+        experiment = mlflow.get_experiment_by_name(experiment_name)
+        if experiment is None:
+            mlflow.create_experiment(experiment_name)
+            mlflow.set_experiment(experiment_name)
+            return experiment_name
+        if _artifact_location_points_to_current_mlruns(experiment.artifact_location):
+            mlflow.set_experiment(experiment_name)
+            return experiment_name
+        suffix += 1
 
 
 def metric_dict(y_true, y_pred) -> dict[str, float]:
@@ -95,7 +135,7 @@ def log_model_run(name, pipeline, X_train, y_train, X_test, y_test, cv) -> dict:
         y_train,
         scoring="balanced_accuracy",
         cv=cv,
-        n_jobs=-1,
+        n_jobs=PARALLEL_JOBS,
     )
     pipeline.fit(X_train, y_train)
     preds = pipeline.predict(X_test)
@@ -122,7 +162,7 @@ def log_model_run(name, pipeline, X_train, y_train, X_test, y_test, cv) -> dict:
         cm_path = MLRUNS_DIR / f"confusion_matrix_{name.lower().replace(' ', '_')}.png"
         save_confusion_matrix(cm, cm_path, f"{name} confusion matrix")
         mlflow.log_artifact(str(cm_path))
-        mlflow.sklearn.log_model(pipeline, artifact_path="model")
+        mlflow.sklearn.log_model(pipeline, name="model")
 
     return {
         "name": name,
@@ -147,11 +187,45 @@ def feature_importance_summary(fitted_pipeline) -> list[dict]:
     return [{"feature": str(names[i]), "importance": float(values[i])} for i in order[:10]]
 
 
+def clinical_selection_rationale(
+    final_model_name: str,
+    final_metrics: dict,
+    final_confusion_matrix: list[list[int]],
+    base_results: list[dict],
+) -> list[str]:
+    false_negatives = int(final_confusion_matrix[1][0])
+    best_base = max(
+        base_results,
+        key=lambda result: (
+            result.get("metrics", {}).get("recall", 0.0),
+            result.get("metrics", {}).get("balanced_accuracy", 0.0),
+        ),
+    )
+    return [
+        (
+            f"The final model is {final_model_name}, selected because its recall "
+            f"{final_metrics.get('recall', 0.0):.4f} keeps false negative cases low."
+        ),
+        (
+            f"Its confusion matrix has {false_negatives} false negative case, which is the most important error "
+            "to reduce in a clinical screening-support setting."
+        ),
+        (
+            f"The strongest base comparison model was {best_base.get('name', 'unknown')} with recall "
+            f"{best_base.get('metrics', {}).get('recall', 0.0):.4f}, so the final choice favors a threshold-tuned "
+            "linear model that is easier to explain while preserving the same recall target."
+        ),
+        (
+            "The model output is used only to recommend review or monitoring, not to diagnose or decide treatment."
+        ),
+    ]
+
+
 def train() -> dict:
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     MLRUNS_DIR.mkdir(parents=True, exist_ok=True)
 
-    df = load_heart_data()
+    df = prepare_model_data(load_heart_data())
     X = df[FEATURE_COLUMNS]
     y = df[TARGET_COLUMN]
     X_train, X_test, y_train, y_test = train_test_split(
@@ -169,8 +243,7 @@ def train() -> dict:
     train_reference.to_csv(TRAIN_REFERENCE_PATH, index=False)
     test_set.to_csv(TEST_SET_PATH, index=False)
 
-    mlflow.set_tracking_uri(f"file:{MLRUNS_DIR.resolve()}")
-    mlflow.set_experiment("CardioCare Action Navigator")
+    experiment_name = configure_mlflow_experiment()
     cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=RANDOM_STATE)
 
     model_specs = {
@@ -185,7 +258,7 @@ def train() -> dict:
             n_estimators=300,
             class_weight="balanced",
             random_state=RANDOM_STATE,
-            n_jobs=-1,
+            n_jobs=PARALLEL_JOBS,
         ),
     }
 
@@ -205,7 +278,7 @@ def train() -> dict:
         param_grid={"model__C": [0.1, 0.5, 1.0, 2.0, 5.0]},
         scoring="recall",
         cv=cv,
-        n_jobs=-1,
+        n_jobs=PARALLEL_JOBS,
         refit=True,
     )
     grid.fit(X_train, y_train)
@@ -235,7 +308,7 @@ def train() -> dict:
         cm_path = MLRUNS_DIR / "confusion_matrix_final_tuned.png"
         save_confusion_matrix(final_cm, cm_path, "Final tuned model confusion matrix")
         mlflow.log_artifact(str(cm_path))
-        mlflow.sklearn.log_model(grid.best_estimator_, artifact_path="model")
+        mlflow.sklearn.log_model(grid.best_estimator_, name="model")
 
     model_version = datetime.now(timezone.utc).strftime("cardiocare-%Y%m%dT%H%M%SZ")
     bundle = {
@@ -254,6 +327,7 @@ def train() -> dict:
         "dataset": "heart+disease.zip / UCI processed Cleveland",
         "service_concept": "CardioCare Action Navigator",
         "target_binarization": "0 -> normal, 1..4 -> heart disease",
+        "mlflow_experiment": experiment_name,
         "random_state": RANDOM_STATE,
         "test_size": TEST_SIZE,
         "model_version": model_version,
@@ -265,13 +339,16 @@ def train() -> dict:
         },
         "final_model": {
             "path": str(MODEL_PATH),
+            "name": "Logistic Regression threshold tuned",
             "threshold": threshold,
             "metrics": final_metrics,
             "confusion_matrix": final_cm.tolist(),
             "selected_original_features": selected_original_features(selected_names),
-            "clinical_selection_note": (
-                "The final model prioritizes recall because false negatives are riskier "
-                "than conservative health-center review recommendations."
+            "clinical_selection_rationale": clinical_selection_rationale(
+                "Logistic Regression threshold tuned",
+                final_metrics,
+                final_cm.tolist(),
+                base_results,
             ),
         },
     }

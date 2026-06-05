@@ -2,6 +2,8 @@
 
 UCI Heart Disease risk-signal prediction plus a personal action guide and consultation-preparation report.
 
+This project is a CLI/Docker-based ML system, not a web UI application.
+
 The project follows the required structure:
 
 ```text
@@ -29,14 +31,10 @@ README.md
 ```bash
 pip install -r requirements.txt
 python src/train.py
-docker build -t cardiocare:1.0 .
-python -m unittest
-```
-
-Optional monitoring command:
-
-```bash
 python src/monitor.py
+python -m unittest
+docker build -t cardiocare:1.0 .
+docker run --rm cardiocare:1.0
 ```
 
 Optional inference command:
@@ -104,6 +102,8 @@ Sources:
 mlruns/cardiocare_model.joblib
 ```
 
+Each model run records params, balanced accuracy, precision, recall, F1, `confusion_matrix.json`, `selected_features.json`, a model artifact, and a `model_family tag`.
+
 To inspect runs:
 
 ```bash
@@ -113,3 +113,13 @@ mlflow ui --backend-store-uri ./mlruns
 ## Monitoring
 
 `python src/monitor.py` logs inference, creates synthetic cholesterol drift, runs `scipy.stats.ks_2samp`, compares balanced accuracy before/after drift, and writes monitoring artifacts under `mlruns/`.
+
+Key monitoring artifacts:
+
+```text
+mlruns/monitoring_summary.json
+mlruns/drift_report.csv
+mlruns/monitoring_timeseries.csv
+mlruns/monitoring_timeseries.png
+mlruns/inference_monitor.log
+```

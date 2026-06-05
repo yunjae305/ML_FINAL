@@ -17,5 +17,8 @@ env/
 .env
 .env.*
 
+mlruns/[0-9]*/
+mlruns/.trash/
+
 .DS_Store
 Thumbs.db

@@ -1,7 +1,7 @@
 {
   "baseline_balanced_accuracy": 0.9063852813852814,
-  "shifted_balanced_accuracy": 0.8912337662337663,
-  "balanced_accuracy_delta": -0.015151515151515138,
+  "shifted_balanced_accuracy": 0.8333333333333333,
+  "balanced_accuracy_delta": -0.07305194805194815,
   "drift_report": [
     {
       "feature": "age",
@@ -17,20 +17,20 @@
     },
     {
       "feature": "chol",
-      "ks_statistic": 0.35367836336539765,
-      "p_value": 6.052332596693281e-06,
+      "ks_statistic": 0.7028857878336269,
+      "p_value": 6.57549301702708e-24,
       "drift_flag": true
     },
     {
       "feature": "thalach",
-      "ks_statistic": 0.07058664137650725,
-      "p_value": 0.9516995052966807,
-      "drift_flag": false
+      "ks_statistic": 0.4966806665763447,
+      "p_value": 1.7489335111067234e-11,
+      "drift_flag": true
     },
     {
       "feature": "oldpeak",
-      "ks_statistic": 0.20376642731337216,
-      "p_value": 0.029436284118401043,
+      "ks_statistic": 0.5578512396694215,
+      "p_value": 1.36315416658958e-14,
       "drift_flag": true
     }
   ]

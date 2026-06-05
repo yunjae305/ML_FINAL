@@ -2,9 +2,10 @@
   "dataset": "heart+disease.zip / UCI processed Cleveland",
   "service_concept": "CardioCare Action Navigator",
   "target_binarization": "0 -> normal, 1..4 -> heart disease",
+  "mlflow_experiment": "CardioCare Action Navigator Reproducible 1",
   "random_state": 42,
   "test_size": 0.2,
-  "model_version": "cardiocare-20260523T102527Z",
+  "model_version": "cardiocare-20260605T023736Z",
   "base_model_results": [
     {
       "name": "Logistic Regression",
@@ -125,7 +126,8 @@
     }
   },
   "final_model": {
-    "path": "C:\\Users\\kyj31\\Desktop\\ML_Final\\mlruns\\cardiocare_model.joblib",
+    "path": "D:\\대학교 자료\\26-1\\기계학습\\ML_FINAL\\mlruns\\cardiocare_model.joblib",
+    "name": "Logistic Regression threshold tuned",
     "threshold": 0.48,
     "metrics": {
       "balanced_accuracy": 0.9063852813852814,
@@ -156,6 +158,11 @@
       "ca",
       "thal"
     ],
-    "clinical_selection_note": "The final model prioritizes recall because false negatives are riskier than conservative health-center review recommendations."
+    "clinical_selection_rationale": [
+      "The final model is Logistic Regression threshold tuned, selected because its recall 0.9643 keeps false negative cases low.",
+      "Its confusion matrix has 1 false negative case, which is the most important error to reduce in a clinical screening-support setting.",
+      "The strongest base comparison model was SVC with recall 0.9643, so the final choice favors a threshold-tuned linear model that is easier to explain while preserving the same recall target.",
+      "The model output is used only to recommend review or monitoring, not to diagnose or decide treatment."
+    ]
   }
 }

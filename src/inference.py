@@ -12,7 +12,7 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from preprocessing import (  # noqa: E402
+from preprocessing import (
     FEATURE_COLUMNS,
     MLRUNS_DIR,
     MODEL_PATH,
@@ -30,9 +30,53 @@ SYMPTOM_COLUMNS = [
 ]
 
 MEDICAL_DISCLAIMER = (
-    "This result is not a medical diagnosis and should not be used as the only basis "
-    "for treatment decisions. It is a risk-signal and consultation-preparation aid."
+    "이 결과는 전문적인 의학 진단이 아니며 치료 결정의 단독 근거로 사용하면 안 됩니다. "
+    "This result is not a professional medical diagnosis; review it with a qualified clinician."
 )
+
+ACTION_LABELS = {
+    "urgent": "urgent",
+    "consult": "consult",
+    "watch": "watch",
+    "low": "low",
+}
+
+
+def _svg_escape(value) -> str:
+    return (
+        str(value)
+        .replace("&", "&amp;")
+        .replace("<", "&lt;")
+        .replace(">", "&gt;")
+        .replace('"', "&quot;")
+    )
+
+
+def build_risk_summary_svg(
+    probability_percent: float,
+    action_level: str,
+    confidence: str,
+    caffeine_alert: str,
+) -> str:
+    probability = max(0.0, min(100.0, float(probability_percent)))
+    bar_width = round(probability * 3.2, 1)
+    action_label = ACTION_LABELS.get(action_level, action_level)
+    color = "#c44536" if action_level in {"urgent", "consult"} else "#d1843f" if action_level == "watch" else "#52796f"
+    return (
+        '<svg xmlns="http://www.w3.org/2000/svg" width="420" height="180" viewBox="0 0 420 180" role="img" aria-label="CardioCare risk summary graph">'
+        '<rect width="420" height="180" rx="12" fill="#f8fafc"/>'
+        '<text x="24" y="34" font-size="18" font-weight="700" fill="#1f2933">Risk signal summary</text>'
+        f'<text x="24" y="66" font-size="28" font-weight="700" fill="{color}">{probability:.1f}%</text>'
+        '<rect x="24" y="88" width="320" height="18" rx="9" fill="#d8dee6"/>'
+        f'<rect x="24" y="88" width="{bar_width}" height="18" rx="9" fill="{color}"/>'
+        '<text x="24" y="132" font-size="14" fill="#596579">Action</text>'
+        f'<text x="84" y="132" font-size="14" font-weight="700" fill="#1f2933">{_svg_escape(action_label)}</text>'
+        '<text x="24" y="156" font-size="14" fill="#596579">Confidence</text>'
+        f'<text x="112" y="156" font-size="14" font-weight="700" fill="#1f2933">{_svg_escape(confidence)}</text>'
+        '<text x="224" y="156" font-size="14" fill="#596579">Caffeine</text>'
+        f'<text x="304" y="156" font-size="14" font-weight="700" fill="#1f2933">{_svg_escape(caffeine_alert)}</text>'
+        '</svg>'
+    )
 
 
 def load_model_bundle(model_path: Path = MODEL_PATH) -> dict:
@@ -148,6 +192,13 @@ def build_consultation_questions(
     return questions
 
 
+def build_guidance_sources(action_level: str, caffeine_alert: str) -> list[str]:
+    sources = ["출처: CDC", "출처: American Heart Association", "출처: MedlinePlus"]
+    if caffeine_alert in {"high", "watch", "moderate"}:
+        sources.append("출처: FDA")
+    return sources
+
+
 def build_visit_summary(result: dict, input_features) -> dict:
     frame = as_feature_frame(input_features)
     first_row = frame.iloc[0].to_dict() if not frame.empty else {}
@@ -164,19 +215,20 @@ def build_visit_summary(result: dict, input_features) -> dict:
         "daily_caffeine_mg": result["daily_caffeine_mg"],
         "caffeine_alert": result["caffeine_alert"],
         "disclaimer": result["medical_disclaimer"],
+        "risk_summary_svg": result.get("risk_summary_svg", ""),
     }
 
 
 def student_message(action_level: str, alert: str, confidence: str) -> str:
     if action_level == "urgent":
         return (
-            "Warning symptoms were reported. This is not a diagnosis; seek urgent medical help "
+            "Warning symptoms were reported. This is not a professional medical diagnosis; seek urgent medical help "
             "through 119, an emergency department, or a qualified clinician."
         )
     if action_level == "consult":
         return (
-            "The model shows a high heart-risk signal. Bring the visit summary to a campus "
-            "health center or clinician for review."
+            "The model shows a high heart-risk signal, but it is not a professional medical diagnosis. "
+            "Bring the visit summary to a campus health center or qualified clinician for review."
         )
     if action_level == "watch":
         return "Review uncertain values and watch for warning symptoms; consider consultation if the signal repeats."
@@ -199,6 +251,7 @@ def predict(features, beverage_log=None, model_bundle: dict | None = None) -> di
     symptoms = extract_symptoms(features)
     action_level = determine_action_level(probability, symptoms, confidence)
     top_risk_factors = bundle.get("selected_original_features", [])[:5]
+    risk_summary_svg = build_risk_summary_svg(probability * 100, action_level, confidence, alert)
 
     result = {
         "heart_probability": round(probability, 4),
@@ -214,7 +267,9 @@ def predict(features, beverage_log=None, model_bundle: dict | None = None) -> di
         "caffeine_alert": alert,
         "response_actions": build_response_actions(action_level, top_risk_factors, alert),
         "consultation_questions": build_consultation_questions(top_risk_factors, symptoms, confidence),
+        "guidance_sources": build_guidance_sources(action_level, alert),
         "medical_disclaimer": MEDICAL_DISCLAIMER,
+        "risk_summary_svg": risk_summary_svg,
         "student_message": student_message(action_level, alert, confidence),
         "model_version": bundle.get("model_version", "unknown"),
         "batch_probabilities": [round(float(value), 4) for value in probabilities],

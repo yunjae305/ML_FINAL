@@ -12,8 +12,8 @@ from sklearn.metrics import balanced_accuracy_score
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from inference import load_model_bundle, log_inference, predict  # noqa: E402
-from preprocessing import (  # noqa: E402
+from inference import load_model_bundle, log_inference, predict
+from preprocessing import (
     CONTINUOUS_FEATURES,
     FEATURE_COLUMNS,
     MLRUNS_DIR,
@@ -32,6 +32,14 @@ def score(bundle: dict, frame: pd.DataFrame, threshold: float) -> float:
     return float(balanced_accuracy_score(frame[TARGET_COLUMN], predictions))
 
 
+def make_drifted_test_set(test_set: pd.DataFrame) -> pd.DataFrame:
+    shifted = test_set.copy()
+    shifted["chol"] = shifted["chol"] * 1.25 + 60
+    shifted["oldpeak"] = shifted["oldpeak"] * 1.40 + 1.0
+    shifted["thalach"] = shifted["thalach"] * 0.85
+    return shifted
+
+
 def run_monitoring() -> dict:
     if not TRAIN_REFERENCE_PATH.exists() or not TEST_SET_PATH.exists():
         raise FileNotFoundError("Run `python src/train.py` before `python src/monitor.py`.")
@@ -42,9 +50,7 @@ def run_monitoring() -> dict:
     train_reference = pd.read_csv(TRAIN_REFERENCE_PATH)
     test_set = pd.read_csv(TEST_SET_PATH)
 
-    shifted = test_set.copy()
-    shifted["chol"] = shifted["chol"] * 1.10 + 30
-    shifted["oldpeak"] = shifted["oldpeak"] * 1.15
+    shifted = make_drifted_test_set(test_set)
 
     drift_rows = []
     for feature in CONTINUOUS_FEATURES:
