@@ -3,7 +3,7 @@ from __future__ import annotations
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
-from urllib.parse import unquote
+from urllib.parse import unquote, urlparse
 
 import joblib
 import matplotlib.pyplot as plt
@@ -51,13 +51,24 @@ EXPERIMENT_NAME = "CardioCare Action Navigator"
 
 def _artifact_location_points_to_current_mlruns(location: str) -> bool:
     normalized_location = unquote(str(location)).replace("\\", "/")
-    normalized_current = str(MLRUNS_DIR.resolve()).replace("\\", "/")
-    if normalized_current not in normalized_location:
-        return False
-    if normalized_location.rstrip("/") == normalized_current:
+    parsed = urlparse(normalized_location)
+    if parsed.scheme == "file":
+        path_text = parsed.path
+        if parsed.netloc:
+            path_text = f"//{parsed.netloc}{path_text}"
+        if len(path_text) > 2 and path_text[0] == "/" and path_text[2] == ":":
+            path_text = path_text[1:]
+    else:
+        path_text = normalized_location.replace("file:", "")
+    current_path = MLRUNS_DIR.resolve()
+    location_path = Path(path_text).resolve()
+    if location_path == current_path:
         return True
-    location_path = Path(normalized_location.replace("file:///", "").replace("file:", ""))
-    if location_path.parent.resolve() == MLRUNS_DIR.resolve() and not location_path.name.isdigit():
+    try:
+        relative_path = location_path.relative_to(current_path)
+    except ValueError:
+        return False
+    if len(relative_path.parts) == 1 and not location_path.name.isdigit():
         return False
     return True
 
