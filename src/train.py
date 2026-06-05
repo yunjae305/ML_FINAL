@@ -335,7 +335,7 @@ def train() -> dict:
     joblib.dump(bundle, MODEL_PATH)
 
     summary = {
-        "dataset": "heart+disease.zip / UCI processed Cleveland",
+        "dataset": "UCI processed Cleveland",
         "service_concept": "CardioCare Action Navigator",
         "target_binarization": "0 -> normal, 1..4 -> heart disease",
         "mlflow_experiment": experiment_name,

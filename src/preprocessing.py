@@ -3,7 +3,6 @@ from __future__ import annotations
 import hashlib
 import json
 import urllib.request
-import zipfile
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -99,19 +98,6 @@ def ensure_uci_data(force: bool = False) -> Path:
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     if RAW_DATA_PATH.exists() and not force and sha256_file(RAW_DATA_PATH) == UCI_SHA256:
         return RAW_DATA_PATH
-
-    local_sources = [
-        ROOT_DIR / "heart+disease.zip",
-        DATA_DIR / "heart+disease.zip",
-    ]
-    for zip_path in local_sources:
-        if zip_path.exists():
-            with zipfile.ZipFile(zip_path) as archive:
-                data = archive.read("processed.cleveland.data")
-            if sha256_bytes(data) != UCI_SHA256:
-                raise ValueError("Checksum mismatch for processed.cleveland.data inside heart+disease.zip")
-            RAW_DATA_PATH.write_bytes(data)
-            return RAW_DATA_PATH
 
     extracted_sources = [
         ROOT_DIR / "heart+disease" / "processed.cleveland.data",
@@ -446,7 +432,7 @@ def _build_report_sections(training: dict, monitoring: dict) -> list[tuple[str, 
                 "목적: UCI Heart Disease 데이터 기반 심장 위험 신호 예측을 개인 사용자가 이해할 수 있는 대응 가이드로 바꿉니다.",
                 "핵심 원칙: CardioCare는 inform, not decide 원칙의 상담 준비 보조 도구이며 전문적인 의학 진단이나 치료 결정을 대신하지 않습니다.",
                 REPORT_MEDICAL_DISCLAIMER,
-                "데이터: 제출된 heart+disease.zip 또는 data/heart+disease/processed.cleveland.data의 processed.cleveland.data를 사용합니다.",
+                "데이터: data/processed.cleveland.data 또는 data/heart+disease/processed.cleveland.data의 UCI Cleveland 데이터를 사용합니다.",
                 "타깃 이진화: UCI target 0은 정상, 1~4는 심장병 있음으로 변환합니다.",
                 "출력: 심장 위험 확률, action level, 대응 행동, 상담 질문, 의료진에게 보여줄 visit summary입니다.",
                 "응급 증상 입력이 true이면 모델 확률보다 사람의 안전을 우선하여 urgent로 라우팅합니다.",

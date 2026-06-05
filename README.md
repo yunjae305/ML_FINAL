@@ -54,13 +54,13 @@ The same command can also create a local `report.html` preview, but it is ignore
 
 ## Dataset
 
-The intended data source is the provided `heart+disease.zip`. The code extracts `processed.cleveland.data` and verifies this checksum:
+The submitted data source is `data/processed.cleveland.data`. The code verifies this checksum:
 
 ```text
 a74b7efa387bc9d108d7d0115d831fe9b414b29ae7124f331b622b4efa0427c8
 ```
 
-If the zip has already been extracted, the loader also accepts `heart+disease/processed.cleveland.data` or `data/heart+disease/processed.cleveland.data`. The UCI URL is only a fallback when no local copy exists.
+The loader also accepts `heart+disease/processed.cleveland.data` or `data/heart+disease/processed.cleveland.data`. The UCI URL is only a fallback when no local copy exists.
 
 Target conversion:
 

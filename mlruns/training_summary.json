@@ -1,11 +1,11 @@
 {
-  "dataset": "heart+disease.zip / UCI processed Cleveland",
+  "dataset": "UCI processed Cleveland",
   "service_concept": "CardioCare Action Navigator",
   "target_binarization": "0 -> normal, 1..4 -> heart disease",
-  "mlflow_experiment": "CardioCare Action Navigator Reproducible 1",
+  "mlflow_experiment": "CardioCare Action Navigator",
   "random_state": 42,
   "test_size": 0.2,
-  "model_version": "cardiocare-20260605T023736Z",
+  "model_version": "cardiocare-20260605T050317Z",
   "base_model_results": [
     {
       "name": "Logistic Regression",
