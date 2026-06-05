@@ -1,4 +1,6 @@
-name: CardioCare CI
+name: 기계학습 기말과제
+
+run-name: 기계학습 기말과제
 
 on:
   push:
@@ -6,6 +8,7 @@ on:
 
 jobs:
   test:
+    name: 기계학습 기말과제
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

@@ -22,7 +22,6 @@ Dockerfile
 requirements.txt
 .github/workflows/ci.yml
 report.pdf
-report.html
 README.md
 ```
 
@@ -45,14 +44,13 @@ python src/inference.py --input data/sample_input.csv --beverages data/sample_be
 
 ## Reports
 
-Training and monitoring regenerate both report formats:
+Training and monitoring regenerate the submitted report:
 
 ```text
 report.pdf
-report.html
 ```
 
-`report.html` is a standalone Korean HTML report. Open it directly in a browser. The report CSS uses Korean font fallbacks: `Noto Sans KR`, `Malgun Gothic`, `Apple SD Gothic Neo`, and `sans-serif`.
+The same command can also create a local `report.html` preview, but it is ignored because the submitted report artifact is `report.pdf`.
 
 ## Dataset
 
@@ -121,5 +119,6 @@ mlruns/monitoring_summary.json
 mlruns/drift_report.csv
 mlruns/monitoring_timeseries.csv
 mlruns/monitoring_timeseries.png
-mlruns/inference_monitor.log
 ```
+
+Inference logs are generated locally during monitoring and inference runs.
