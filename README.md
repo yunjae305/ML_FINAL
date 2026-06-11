@@ -2,10 +2,14 @@
 
 CardioCare는 UCI Heart Disease 데이터를 사용해 심장병 위험 신호를 예측하고, 그 결과를 상담 준비용 행동 가이드로 변환하는 CLI/Docker 기반 ML 시스템입니다. 이 프로젝트는 전문적인 의학 진단 도구가 아니라 `inform, not decide` 원칙을 따르는 의사결정 보조 예시입니다.
 
-## 제출 구조
+## 프로젝트 구성
 
 ```text
 data/
+  processed.cleveland.data
+  beverages.csv
+  sample_input.csv
+  sample_beverage_log.csv
 notebooks/
   01_eda_preprocessing.ipynb
 src/
@@ -16,6 +20,12 @@ src/
 tests/
   test_pipeline.py
 mlruns/
+  cardiocare_model.joblib
+  training_summary.json
+  monitoring_summary.json
+  drift_report.csv
+  monitoring_timeseries.csv
+  monitoring_timeseries.png
 Dockerfile
 requirements.txt
 .github/workflows/ci.yml
@@ -25,7 +35,7 @@ README.md
 
 ## 전체 재현 절차
 
-채점자는 저장소를 clone한 뒤 아래 순서로 전체 파이프라인을 재현할 수 있습니다.
+채점자는 저장소를 clone한 뒤 아래 순서로 학습, 모니터링, 테스트, Docker 추론을 재현할 수 있습니다.
 
 ```bash
 pip install -r requirements.txt
@@ -36,13 +46,13 @@ docker build -t cardiocare:1.0 .
 docker run --rm cardiocare:1.0
 ```
 
-선택적으로 샘플 입력에 대해 추론만 실행할 수 있습니다.
+샘플 입력에 대해 추론만 실행할 때는 다음 명령을 사용합니다.
 
 ```bash
 python src/inference.py --input data/sample_input.csv --beverages data/sample_beverage_log.csv
 ```
 
-## 데이터
+## 데이터와 전처리
 
 제출 데이터는 `data/processed.cleveland.data`입니다. 코드는 실행 시 SHA-256 체크섬을 확인합니다.
 
@@ -57,7 +67,7 @@ a74b7efa387bc9d108d7d0115d831fe9b414b29ae7124f331b622b4efa0427c8
 1,2,3,4 -> 심장병 있음
 ```
 
-`data/beverages.csv`, `data/sample_input.csv`, `data/sample_beverage_log.csv`는 Docker와 예시 추론을 위한 작은 샘플 파일입니다.
+전처리는 결측값을 삭제하지 않고 수치형과 범주형 특성에 맞는 파이프라인으로 처리합니다. `data/beverages.csv`, `data/sample_input.csv`, `data/sample_beverage_log.csv`는 Docker와 예시 추론을 위한 작은 샘플 파일입니다.
 
 ## 학습과 MLflow
 
@@ -69,11 +79,30 @@ mlruns/cardiocare_model.joblib
 
 학습 과정에서는 Logistic Regression, SVC, Random Forest를 비교하고, 각 실험에 balanced accuracy, precision, recall, F1, `confusion_matrix.json`, `selected_features.json`, 모델 artifact, `model_family tag`를 기록합니다.
 
+현재 저장된 최종 모델은 `Logistic Regression threshold tuned`입니다.
+
+```text
+threshold: 0.48
+balanced accuracy: 0.9064
+precision: 0.8438
+recall: 0.9643
+f1: 0.9000
+confusion matrix: [[28, 5], [1, 27]]
+```
+
+SVC는 balanced accuracy가 더 높지만 최종 선택은 recall을 유지하면서 설명 가능한 선형 모델과 낮은 false negative 수를 우선한 threshold-tuned Logistic Regression입니다.
+
 MLflow UI는 다음 명령으로 확인할 수 있습니다.
 
 ```bash
 mlflow ui --backend-store-uri ./mlruns
 ```
+
+## 추론과 행동 가이드
+
+`src/inference.py`는 저장된 모델로 배치 추론을 실행하고, 예측 확률을 상담 준비용 정보로 변환합니다. 출력에는 위험 단계, confidence level, 주요 위험 특성, 카페인/당 섭취 요약, 상담 질문, visit summary, SVG risk summary가 포함됩니다.
+
+응급 증상 입력이 true이면 모델 확률보다 사용자 안전을 우선하여 `urgent` 행동 단계로 라우팅합니다.
 
 ## 모니터링과 드리프트
 
@@ -85,6 +114,8 @@ mlruns/drift_report.csv
 mlruns/monitoring_timeseries.csv
 mlruns/monitoring_timeseries.png
 ```
+
+현재 모니터링 결과는 baseline balanced accuracy 0.9064에서 shifted balanced accuracy 0.8333으로 감소했으며, `chol`, `thalach`, `oldpeak`에서 drift flag가 발생했습니다.
 
 ## 테스트와 패키징
 
@@ -98,7 +129,7 @@ Docker 이미지는 실행에 필요한 `src/`, 샘플 데이터, 최종 모델�
 
 ## 안전 및 윤리
 
-이 시스템의 출력은 전문적인 의학 진단이 아니며 치료 결정의 단독 근거로 사용하면 안 됩니다. 응급 증상이 입력되면 모델 확률보다 사용자 안전을 우선하여 urgent 행동 단계로 라우팅합니다.
+이 시스템의 출력은 전문적인 의학 진단이 아니며 치료 결정의 단독 근거로 사용하면 안 됩니다. consult, urgent, low-confidence, drift-triggered retraining 후보는 사람 검토를 거치는 Human-in-the-loop 흐름으로 다룹니다.
 
 참고 자료:
 
